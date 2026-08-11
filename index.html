@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>トレーニング予約</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  background: #f7f7f7;
+  color: #333;
+}
+
+.header {
+  background: #ffffff;
+  padding: 28px 20px 20px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.header p {
+  margin: 8px 0 0;
+  color: #777;
+  font-size: 14px;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+}
+
+.date-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 10px 0 16px;
+}
+
+.slot {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.time {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.staff {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.capacity {
+  color: #777;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.reserve-button {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  background: #222;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.reserve-button:active {
+  opacity: 0.7;
+}
+
+.note {
+  margin-top: 24px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 12px;
+  color: #666;
+  font-size: 13px;
+  line-height: 1.7;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h1>トレーニング予約</h1>
+  <p>ご希望の日時を選択してください</p>
+</div>
+
+<div class="container">
+
+  <div class="date-title">
+    8月24日（月）
+  </div>
+
+  <!-- 11:00〜13:00 -->
+  <div class="slot">
+    <div class="time">11:00〜13:00</div>
+
+    <div class="staff">
+      👤 スタッフ2名<br>
+      <strong>神谷・杉浦</strong>
+    </div>
+
+    <div class="capacity">
+      定員：4名
+    </div>
+
+    <button class="reserve-button"
+      onclick="reserve('8月24日 11:00〜13:00')">
+      この時間を予約する
+    </button>
+  </div>
+
+
+  <!-- 15:00〜17:00 -->
+  <div class="slot">
+    <div class="time">15:00〜17:00</div>
+
+    <div class="staff">
+      👤 スタッフ1名<br>
+      <strong>神谷</strong>
+    </div>
+
+    <div class="capacity">
+      定員：3名
+    </div>
+
+    <button class="reserve-button"
+      onclick="reserve('8月24日 15:00〜17:00')">
+      この時間を予約する
+    </button>
+  </div>
+
+
+  <div class="note">
+    ※予約内容をご確認のうえ、お申し込みください。<br>
+    ※予約人数には限りがあります。
+  </div>
+
+</div>
+
+<script>
+function reserve(time) {
+  alert(
+    "予約する時間：\n\n" +
+    time +
+    "\n\nこの時間を予約しますか？"
+  );
+}
+</script>
+
+</body>
+</html>
