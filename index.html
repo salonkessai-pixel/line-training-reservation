@@ -79,10 +79,6 @@
       background: #fafafa;
     }
 
-    .slot:last-child {
-      margin-bottom: 0;
-    }
-
     .time {
       font-size: 18px;
       font-weight: bold;
@@ -92,6 +88,22 @@
     .capacity {
       font-size: 14px;
       margin-bottom: 12px;
+      font-weight: bold;
+    }
+
+    .remaining {
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .available {
+      color: #16803c;
+    }
+
+    .full {
+      color: #c62828;
+      font-weight: bold;
+      font-size: 16px;
     }
 
     button {
@@ -108,6 +120,7 @@
 
     button:disabled {
       background: #aaa;
+      color: white;
       cursor: not-allowed;
     }
 
@@ -219,7 +232,7 @@
   </div>
 
 
-  <!-- 予約完了メッセージ -->
+  <!-- メッセージ -->
   <div id="message" class="message"></div>
 
 
@@ -236,18 +249,24 @@
     </div>
 
 
-    <!-- 11:00 -->
     <div class="slot">
 
       <div class="time">
         11:00〜13:00
       </div>
 
-      <div class="capacity" id="capacity-2026-08-23-11">
+      <div class="capacity">
         定員：4名
       </div>
 
+      <div
+        class="remaining"
+        id="remaining-2026-08-23-11">
+        残り人数を確認中...
+      </div>
+
       <button
+        id="button-2026-08-23-11"
         onclick="openReservation(
           '2026年8月23日',
           '11:00〜13:00',
@@ -259,18 +278,24 @@
     </div>
 
 
-    <!-- 13:00 -->
     <div class="slot">
 
       <div class="time">
         13:00〜15:00
       </div>
 
-      <div class="capacity" id="capacity-2026-08-23-13">
+      <div class="capacity">
         定員：4名
       </div>
 
+      <div
+        class="remaining"
+        id="remaining-2026-08-23-13">
+        残り人数を確認中...
+      </div>
+
       <button
+        id="button-2026-08-23-13"
         onclick="openReservation(
           '2026年8月23日',
           '13:00〜15:00',
@@ -282,18 +307,24 @@
     </div>
 
 
-    <!-- 15:00 -->
     <div class="slot">
 
       <div class="time">
         15:00〜17:00
       </div>
 
-      <div class="capacity" id="capacity-2026-08-23-15">
+      <div class="capacity">
         定員：4名
       </div>
 
+      <div
+        class="remaining"
+        id="remaining-2026-08-23-15">
+        残り人数を確認中...
+      </div>
+
       <button
+        id="button-2026-08-23-15"
         onclick="openReservation(
           '2026年8月23日',
           '15:00〜17:00',
@@ -320,18 +351,24 @@
     </div>
 
 
-    <!-- 13:00 -->
     <div class="slot">
 
       <div class="time">
         13:00〜15:00
       </div>
 
-      <div class="capacity" id="capacity-2026-08-24-13">
+      <div class="capacity">
         定員：3名
       </div>
 
+      <div
+        class="remaining"
+        id="remaining-2026-08-24-13">
+        残り人数を確認中...
+      </div>
+
       <button
+        id="button-2026-08-24-13"
         onclick="openReservation(
           '2026年8月24日',
           '13:00〜15:00',
@@ -343,18 +380,24 @@
     </div>
 
 
-    <!-- 15:00 -->
     <div class="slot">
 
       <div class="time">
         15:00〜17:00
       </div>
 
-      <div class="capacity" id="capacity-2026-08-24-15">
+      <div class="capacity">
         定員：3名
       </div>
 
+      <div
+        class="remaining"
+        id="remaining-2026-08-24-15">
+        残り人数を確認中...
+      </div>
+
       <button
+        id="button-2026-08-24-15"
         onclick="openReservation(
           '2026年8月24日',
           '15:00〜17:00',
@@ -403,7 +446,7 @@
 </div>
 
 
-<!-- 予約入力画面 -->
+<!-- 予約入力 -->
 <div id="modal" class="modal">
 
   <div class="modal-content">
@@ -443,18 +486,11 @@
 <script>
 
   /*
-   * ========================================
-   * Google Apps ScriptのURL
-   * ========================================
-   *
-   * 後ほどここに、
-   * Google Apps ScriptのウェブアプリURLを
-   * 貼り付けます。
-   *
+   * Google Apps Script URL
    */
 
   const SCRIPT_URL =
-    " https://script.google.com/macros/s/AKfycbzef9F3AAB_tQQ8dPZ46Rf0cqrrR0AQknPz0CyKoHPbHWyJhdNFxEBMRADmhGXEyCw/exec";
+    "https://script.google.com/macros/s/AKfycbzef9F3AAB_tQQ8dPZ46Rf0cqrrR0AQknPz0CyKoHPbHWyJhdNFxEBMRADmhGXEyCw/exec";
 
 
   let selectedDate = "";
@@ -463,23 +499,196 @@
 
 
   /*
-   * 予約ボタンを押したとき
+   * ページを開いたときに
+   * 現在の予約状況を取得
    */
 
-  function openReservation(date, time, capacity) {
+  window.addEventListener(
+    "load",
+    function() {
+      loadReservationStatus();
+    }
+  );
+
+
+  /*
+   * 予約状況を取得
+   */
+
+  async function loadReservationStatus() {
+
+    try {
+
+      const response =
+        await fetch(SCRIPT_URL);
+
+      const data =
+        await response.json();
+
+
+      updateSlot(
+        "2026年8月23日",
+        "11:00〜13:00",
+        "remaining-2026-08-23-11",
+        "button-2026-08-23-11",
+        data
+      );
+
+
+      updateSlot(
+        "2026年8月23日",
+        "13:00〜15:00",
+        "remaining-2026-08-23-13",
+        "button-2026-08-23-13",
+        data
+      );
+
+
+      updateSlot(
+        "2026年8月23日",
+        "15:00〜17:00",
+        "remaining-2026-08-23-15",
+        "button-2026-08-23-15",
+        data
+      );
+
+
+      updateSlot(
+        "2026年8月24日",
+        "13:00〜15:00",
+        "remaining-2026-08-24-13",
+        "button-2026-08-24-13",
+        data
+      );
+
+
+      updateSlot(
+        "2026年8月24日",
+        "15:00〜17:00",
+        "remaining-2026-08-24-15",
+        "button-2026-08-24-15",
+        data
+      );
+
+    } catch (error) {
+
+      console.log(
+        "予約状況の取得に失敗しました",
+        error
+      );
+
+    }
+
+  }
+
+
+  /*
+   * 各予約枠を更新
+   */
+
+  function updateSlot(
+    date,
+    time,
+    remainingId,
+    buttonId,
+    data
+  ) {
+
+    const key =
+      date + "_" + time;
+
+    const info =
+      data[key];
+
+    if (!info) {
+      return;
+    }
+
+
+    const remaining =
+      info.remaining;
+
+    const remainingElement =
+      document.getElementById(remainingId);
+
+    const button =
+      document.getElementById(buttonId);
+
+
+    if (remaining <= 0) {
+
+      remainingElement.innerHTML =
+        '<span class="full">🔴 予約満員</span>';
+
+      remainingElement.className =
+        "remaining full";
+
+      button.disabled = true;
+
+      button.innerHTML =
+        "予約受付終了";
+
+    } else {
+
+      remainingElement.innerHTML =
+        '<span class="available">' +
+        "残り" +
+        remaining +
+        "名" +
+        "</span>";
+
+      remainingElement.className =
+        "remaining available";
+
+      button.disabled = false;
+
+      button.innerHTML =
+        "この時間を予約する";
+
+    }
+
+  }
+
+
+  /*
+   * 予約ボタン
+   */
+
+  function openReservation(
+    date,
+    time,
+    capacity
+  ) {
 
     selectedDate = date;
+
     selectedTime = time;
+
     selectedCapacity = capacity;
 
-    document.getElementById("selectedInfo").innerHTML =
-      "<strong>" + date + "</strong><br>" +
-      time + "<br><br>" +
+
+    document.getElementById(
+      "selectedInfo"
+    ).innerHTML =
+
+      "<strong>" +
+      date +
+      "</strong><br>" +
+
+      time +
+      "<br><br>" +
+
       "この時間で予約します。";
 
-    document.getElementById("name").value = "";
 
-    document.getElementById("modal").style.display = "flex";
+    document.getElementById(
+      "name"
+    ).value = "";
+
+
+    document.getElementById(
+      "modal"
+    ).style.display = "flex";
 
   }
 
@@ -490,7 +699,9 @@
 
   function closeModal() {
 
-    document.getElementById("modal").style.display = "none";
+    document.getElementById(
+      "modal"
+    ).style.display = "none";
 
   }
 
@@ -502,30 +713,16 @@
   async function submitReservation() {
 
     const name =
-      document.getElementById("name").value.trim();
+      document
+        .getElementById("name")
+        .value
+        .trim();
 
 
     if (!name) {
 
-      alert("お名前を入力してください。");
-
-      return;
-
-    }
-
-
-    /*
-     * Apps ScriptのURLがまだ設定されていない場合
-     */
-
-    if (
-      SCRIPT_URL.includes(
-        "ここにGoogle Apps Script"
-      )
-    ) {
-
       alert(
-        "予約システムの設定がまだ完了していません。"
+        "お名前を入力してください。"
       );
 
       return;
@@ -546,6 +743,10 @@
 
     try {
 
+      /*
+       * 予約送信
+       */
+
       await fetch(
         SCRIPT_URL,
         {
@@ -554,10 +755,12 @@
           mode: "no-cors",
 
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type":
+              "application/json"
           },
 
-          body: JSON.stringify(data)
+          body:
+            JSON.stringify(data)
 
         }
       );
@@ -567,27 +770,30 @@
 
 
       const message =
-        document.getElementById("message");
+        document.getElementById(
+          "message"
+        );
 
 
-      message.style.display = "block";
+      message.style.display =
+        "block";
 
 
       message.innerHTML =
 
         '<div class="success">' +
-        '予約を受け付けました！' +
-        '</div>' +
+        "予約を受け付けました！" +
+        "</div>" +
 
-        '<br>' +
+        "<br>" +
 
         selectedDate +
-        '<br>' +
+        "<br>" +
 
         selectedTime +
-        '<br>' +
+        "<br>" +
 
-        'お名前：' +
+        "お名前：" +
         name;
 
 
@@ -598,6 +804,16 @@
         behavior: "smooth"
 
       });
+
+
+      /*
+       * 予約後に最新人数を取得
+       */
+
+      setTimeout(
+        loadReservationStatus,
+        1000
+      );
 
 
     } catch (error) {
